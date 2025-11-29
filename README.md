@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # 🏋️‍♂️ Health Manager
 React + Spring Boot 기반 **BMI 계산 / 운동 루틴 / 식단 추천 / JWT 인증** 헬스 관리 서비스
 
@@ -376,4 +376,3 @@ backend/README.md → API/DB/JWT 상세
 frontend/README.md → 페이지·라우팅·Axios 상세
 
 ---
->>>>>>> c2c1706 (picture)
