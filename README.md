@@ -106,7 +106,7 @@ architecture:
       - "회원 정보 저장"
       - "JPA로 DB 연동"
 
-
+```
 
 ---
 
@@ -123,7 +123,7 @@ architecture:
 ## 📸 화면 미리보기
 
 ### 🔐 로그인 페이지
-![image login](https://github.com/dbscksduf1/HealthManager/blob/main/login.png?raw=true)
+![로그인화면](images/login.png)
 
 ---
 ### 📝 회원가입 페이지
@@ -137,7 +137,7 @@ architecture:
 ---
 
 ### 📊 BMI 계산 페이지
-![image alt](https://github.com/dbscksduf1/HealthManager/blob/main/images/bmi.png?raw=true)
+![bmi계산](images/bmi.png)
 
 ---
 
@@ -375,6 +375,7 @@ backend/README.md → API/DB/JWT 상세
 frontend/README.md → 페이지·라우팅·Axios 상세
 
 ---
+
 
 
 
