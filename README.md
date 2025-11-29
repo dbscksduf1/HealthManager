@@ -138,7 +138,7 @@ architecture:
 ---
 
 ### 📊 BMI 계산 페이지
-![BMI 계산 화면](images/bmi.png)
+![image alt](https://github.com/dbscksduf1/HealthManager/blob/main/images/bmi.png?raw=true)
 
 ---
 
@@ -376,3 +376,4 @@ backend/README.md → API/DB/JWT 상세
 frontend/README.md → 페이지·라우팅·Axios 상세
 
 ---
+
