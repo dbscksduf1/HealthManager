@@ -123,7 +123,7 @@ architecture:
 ## 📸 화면 미리보기
 
 ### 🔐 로그인 페이지
-![image alt](https://github.com/dbscksduf1/HealthManager/blob/main/images/login.png?raw=true)
+![image alt]([https://github.com/dbscksduf1/HealthManager/blob/main/images/login.png?raw=true](https://github.com/dbscksduf1/HealthManager/blob/main/images/login.png?raw=true))
 
 ---
 
@@ -376,5 +376,6 @@ backend/README.md → API/DB/JWT 상세
 frontend/README.md → 페이지·라우팅·Axios 상세
 
 ---
+
 
 
