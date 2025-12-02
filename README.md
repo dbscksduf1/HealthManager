@@ -158,16 +158,12 @@ architecture:
 cd backend
 ./gradlew bootRun
 
-shell
-코드 복사
 
 ### ✔ Frontend 실행
 cd frontend
 npm install
 npm run dev
 
-yaml
-코드 복사
 
 ---
 
@@ -179,29 +175,19 @@ POST /user/login
 POST /user/create
 GET /health/status?height=175&weight=75
 
-yaml
-코드 복사
+
 
 ---
 
-## 📦 배포(예정)
-- Docker 기반 컨테이너 구성 예정
-- Render 또는 AWS EC2 배포 예정
-- GitHub Actions로 자동 빌드 예정
-
+## 📦 배포
+- Frontend: Vercel 배포 완료
+- Backend: Render(Spring Boot 빌드 방식) 배포 완료
+- Database: Render MySQL 사용
 ---
 
 ## 👨‍💻 개발자
-**윤찬열(Backend + Frontend Full)**  
-- 프론트 UI 개발  
+**윤찬열(Backend + Frontend Full)**    
 - Spring Boot API 개발  
 - JWT 인증 및 DB 설계  
 - 아키텍처 설계 / 테스트 / 디버깅  
 
----
-
-## 📚 기타
-backend/README.md → API/DB/JWT 상세  
-frontend/README.md → 페이지·라우팅·Axios 상세
-
----
