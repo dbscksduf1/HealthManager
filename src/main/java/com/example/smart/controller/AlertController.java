@@ -1,0 +1,4 @@
+package com.example.smart.controller;
+
+public class AlertController {
+}
