@@ -2,6 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "https://healthmanager-backend.onrender.com/",
+  withCredentials: true,
 });
 
 api.interceptors.request.use(
