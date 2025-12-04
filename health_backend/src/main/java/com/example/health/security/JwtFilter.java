@@ -15,39 +15,58 @@ import java.io.IOException;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
+    private final JwtUtil jwtUtil;
+
+    public JwtFilter(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain chain)
+                                    FilterChain filterChain)
             throws ServletException, IOException {
 
+        // 🔥 1) 로그인/회원가입은 JWT 검사 제외
+        String path = request.getRequestURI();
+        if (path.startsWith("/user/login") || path.startsWith("/user/create")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 🔥 2) JWT 인증 처리
         String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            chain.doFilter(request, response);
-            return;
+        String token = null;
+        String username = null;
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+            try {
+                username = jwtUtil.getUsername(token);
+            } catch (Exception e) {
+                // 토큰 문제 있을 때 403 리턴
+                response.setStatus(403);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"error\":\"권한이 없습니다.\"}");
+                return;
+            }
         }
 
-        String token = authHeader.substring(7);
+        if (username != null &&
+                SecurityContextHolder.getContext().getAuthentication() == null &&
+                jwtUtil.validateToken(token)) {
 
-        try {
-            JwtUtil.validate(token);
-        } catch (Exception e) {
-            response.setStatus(403);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write("{\"error\":\"권한이 없습니다.\"}");
-            return;
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(username, null, null);
+
+            authToken.setDetails(
+                    new WebAuthenticationDetailsSource().buildDetails(request)
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
-        String username = JwtUtil.getUsername(token);
-
-        UsernamePasswordAuthenticationToken authToken =
-                new UsernamePasswordAuthenticationToken(username, null, null);
-
-        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-        SecurityContextHolder.getContext().setAuthentication(authToken);
-
-        chain.doFilter(request, response);
+        filterChain.doFilter(request, response);
     }
 }

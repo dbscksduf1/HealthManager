@@ -15,12 +15,15 @@ public class RoutineController {
 
     private final RoutineService routineService;
     private final UserService userService;
+    private final JwtUtil jwtUtil;   // 🔥 추가됨
 
-    public RoutineController(RoutineService routineService, UserService userService) {
+    public RoutineController(RoutineService routineService,
+                             UserService userService,
+                             JwtUtil jwtUtil) {    // 🔥 생성자 주입
         this.routineService = routineService;
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
-
 
     @PostMapping("/add")
     public Routine addRoutine(
@@ -28,7 +31,7 @@ public class RoutineController {
             @RequestBody Routine routine
     ) {
         String realToken = token.replace("Bearer ", "");
-        String username = JwtUtil.getUsername(realToken);
+        String username = jwtUtil.getUsername(realToken);   // 🔥 수정됨
 
         User user = userService.findByUsername(username);
         routine.setUserId(user.getId());
@@ -36,18 +39,16 @@ public class RoutineController {
         return routineService.save(routine);
     }
 
-
     @GetMapping("/my")
     public List<Routine> myRoutine(
             @RequestHeader("Authorization") String token
     ) {
         String realToken = token.replace("Bearer ", "");
-        String username = JwtUtil.getUsername(realToken);
+        String username = jwtUtil.getUsername(realToken);   // 🔥 수정됨
 
         User user = userService.findByUsername(username);
         return routineService.findByUserId(user.getId());
     }
-
 
     @PutMapping("/update/{id}")
     public Routine updateRoutine(
@@ -57,7 +58,6 @@ public class RoutineController {
     ) {
         return routineService.update(id, routine);
     }
-
 
     @DeleteMapping("/delete/{id}")
     public void deleteRoutine(

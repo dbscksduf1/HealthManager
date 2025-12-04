@@ -14,4 +14,5 @@ public class HealthStatusResponse {
     private String goal;
     private Map<String, Object> routine;
     private Map<String, Object> meals;
+    private String aiComment;
 }

@@ -2,6 +2,7 @@ package com.example.health.controller;
 
 import com.example.health.domain.User;
 import com.example.health.dto.LoginRequest;
+import com.example.health.dto.LoginResponse;
 import com.example.health.security.JwtUtil;
 import com.example.health.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService service;
+    private final JwtUtil jwtUtil;  // 🔥 JwtUtil DI 추가
 
 
     @PostMapping("/create")
@@ -56,7 +58,7 @@ public class UserController {
             }
 
             String realToken = token.replace("Bearer ", "");
-            String username = JwtUtil.getUsername(realToken);
+            String username = jwtUtil.getUsername(realToken);  // 🔥 static 제거됨
 
             User user = service.findByUsername(username);
             return ResponseEntity.ok(user);
@@ -90,6 +92,7 @@ public class UserController {
 
 
 
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
@@ -100,11 +103,10 @@ public class UserController {
                 return ResponseEntity.status(401).body("비밀번호가 틀렸습니다.");
             }
 
-            String token = JwtUtil.createToken(user.getUsername());
-            return ResponseEntity.ok(token);
+            String token = jwtUtil.generateToken(user.getUsername());  // 🔥 generateToken 사용
+            return ResponseEntity.ok(new LoginResponse(token));
 
         } catch (IllegalArgumentException e) {
-
             return ResponseEntity.status(401).body(e.getMessage());
         }
     }

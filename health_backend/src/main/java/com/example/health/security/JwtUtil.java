@@ -1,45 +1,55 @@
 package com.example.health.security;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.Date;
 
+@Component
 public class JwtUtil {
 
-    private static final String SECRET = "health-manager-super-secret-key-123456";
-    private static final SecretKey KEY = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60;
+    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    public static String createToken(String username) {
+    // 🔥 토큰 생성
+    public String generateToken(String username) {
+        long now = System.currentTimeMillis();
+        long expireTime = 1000L * 60 * 60 * 24; // 24시간
+
         return Jwts.builder()
                 .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(KEY, SignatureAlgorithm.HS256)
+                .setIssuedAt(new Date(now))
+                .setExpiration(new Date(now + expireTime))
+                .signWith(key)
                 .compact();
     }
 
-    public static void validate(String token) {
-        Jwts.parserBuilder()
-                .setSigningKey(KEY)
-                .build()
-                .parseClaimsJws(token);
-    }
-
-    public static String getUsername(String token) {
+    // 🔥 토큰에서 username 가져오기
+    public String getUsername(String token) {
         try {
             return Jwts.parserBuilder()
-                    .setSigningKey(KEY)
+                    .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token)
                     .getBody()
                     .getSubject();
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    // 🔥 토큰 유효성 검증
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+
+            return true; // 정상적인 경우
+        } catch (JwtException | IllegalArgumentException e) {
+            return false; // 토큰 위조, 만료 등
         }
     }
 }

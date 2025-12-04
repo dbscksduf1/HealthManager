@@ -1,20 +1,25 @@
 package com.example.health.controller;
 
 import com.example.health.dto.HealthStatusResponse;
+import com.example.health.service.AICommentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/health")
+@RequiredArgsConstructor
 public class HealthController {
+
+    private final AICommentService aiCommentService;
 
     @GetMapping("/status")
     public ResponseEntity<?> status(
             @RequestParam(required = false) Double height,
             @RequestParam(required = false) Double weight
     ) {
-
 
         if (height == null || height <= 0) {
             throw new IllegalArgumentException("키를 올바르게 입력해주세요.");
@@ -33,14 +38,13 @@ public class HealthController {
         Map<String, Object> routine = generateRoutine(goal);
         Map<String, Object> meals = generateMeals(goal);
 
+        String aiComment = aiCommentService.generateComment(bmi, goal);
+
         HealthStatusResponse response =
-                new HealthStatusResponse(bmi, goal, routine, meals);
+                new HealthStatusResponse(bmi, goal, routine, meals, aiComment);
 
         return ResponseEntity.ok(response);
     }
-
-
-
 
     private Map<String, Object> generateRoutine(String goal) {
 
@@ -54,7 +58,7 @@ public class HealthController {
                         "시티드로우 4x8"
                 ),
                 "day2", List.of(
-                        "DAY2 - 가슴·팔",
+                        "DAYDAY 2 - 가슴·팔",
                         "벤치프레스 5x5",
                         "인클라인덤벨프레스 4x6",
                         "푸쉬다운 4x10",
@@ -132,9 +136,6 @@ public class HealthController {
         };
     }
 
-
-
-
     private Map<String, Object> generateMeals(String goal) {
 
         List<Map<String, Object>> meals;
@@ -170,7 +171,6 @@ public class HealthController {
         return result;
     }
 
-
     private Map<String, Object> item(String name, double gram,
                                      double cal, double carb, double protein, double fat) {
         return Map.of(
@@ -182,7 +182,6 @@ public class HealthController {
                 "fat", fat
         );
     }
-
 
     private Map<String, Object> meal(Map<String, Object>... items) {
 
@@ -207,7 +206,6 @@ public class HealthController {
                 )
         );
     }
-
 
     private List<Map<String, Object>> bulkMeals() {
 
