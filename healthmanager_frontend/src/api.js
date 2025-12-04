@@ -6,8 +6,10 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    // 🔥 로그인 요청에는 토큰 절대 붙이지 않음
-    if (config.url.includes("/user/login")) {
+
+    // 🔥 로그인 요청 절대 토큰 붙이지 않도록 URL 정규화
+    const cleanUrl = config.url.replace(config.baseURL, "");
+    if (cleanUrl === "/user/login") {
       return config;
     }
 
