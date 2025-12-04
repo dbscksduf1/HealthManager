@@ -42,9 +42,9 @@ function ExerciseAIPT() {
       <div className="exercise-container">
         <div className="exercise-card">
 
-          <h1 className="exercise-title">AI 운동 자세 설명</h1>
+          <h1 className="exercise-title">운동 자세</h1>
 
-          <h3 className="exercise-subtitle">운동 부위 선택</h3>
+          <h3 className="exercise-subtitle">운동할 부위를 선택해주세요.</h3>
           <div className="exercise-buttons">
             {Object.keys(categories).map((cat) => (
               <button
