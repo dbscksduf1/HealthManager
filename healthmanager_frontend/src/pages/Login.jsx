@@ -24,7 +24,13 @@ function Login() {
         password: pw,
       });
 
-      const token = res.data;
+      // 🔥 백엔드에서 token 필드로 보내기 때문에 이렇게 받아야 함
+      const token = res.data.token;
+      if (!token) {
+        setError("서버에서 토큰을 받지 못했습니다.");
+        return;
+      }
+
       localStorage.setItem("token", token);
 
       navigate("/main");

@@ -24,10 +24,10 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  /* ❌ flex 정렬 제거 */
   min-width: 320px;
   min-height: 100vh;
+  background-color: #f5f5f5; /* 선택: 사이트 배경색 */
 }
 
 h1 {
