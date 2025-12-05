@@ -24,15 +24,20 @@ function Login() {
         password: pw,
       });
 
-      // 🔥 서버에서 token 필드로 보내기 때문에 정확히 token 값만 꺼내기
-      const token = res.data.token;
+      // 🔥 토큰이 객체로 오는 경우까지 모두 처리
+      const rawToken = res.data.token;
+
+      const token =
+        typeof rawToken === "object" && rawToken !== null
+          ? rawToken.token
+          : rawToken;
 
       if (!token || typeof token !== "string") {
         setError("서버에서 토큰을 받지 못했습니다.");
         return;
       }
 
-      // 🔥 문자열 토큰만 저장 — 절대 객체 저장하면 안 됨
+      // 🔥 절대 객체 저장하지 않고 순수 문자열만 저장
       localStorage.setItem("token", token);
 
       navigate("/main");
@@ -40,7 +45,8 @@ function Login() {
     } catch (err) {
       if (err.response?.status === 401) {
         const msg =
-          err.response?.data?.error || "아이디 또는 비밀번호가 올바르지 않습니다.";
+          err.response?.data?.error ||
+          "아이디 또는 비밀번호가 올바르지 않습니다.";
         setError(msg);
         return;
       }
