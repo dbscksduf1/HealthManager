@@ -54,7 +54,7 @@ function App() {
           }
         />
 
-        {/* AI 헬스 챗봇 */}
+        {/* PT 챗봇 */}
         <Route
           path="/assistant"
           element={
