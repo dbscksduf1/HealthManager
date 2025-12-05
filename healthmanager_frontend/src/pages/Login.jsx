@@ -24,13 +24,15 @@ function Login() {
         password: pw,
       });
 
-      // 🔥 백엔드에서 token 필드로 보내기 때문에 이렇게 받아야 함
+      // 🔥 서버에서 token 필드로 보내기 때문에 정확히 token 값만 꺼내기
       const token = res.data.token;
-      if (!token) {
+
+      if (!token || typeof token !== "string") {
         setError("서버에서 토큰을 받지 못했습니다.");
         return;
       }
 
+      // 🔥 문자열 토큰만 저장 — 절대 객체 저장하면 안 됨
       localStorage.setItem("token", token);
 
       navigate("/main");
@@ -38,7 +40,7 @@ function Login() {
     } catch (err) {
       if (err.response?.status === 401) {
         const msg =
-          err.response?.data || "아이디 또는 비밀번호가 올바르지 않습니다.";
+          err.response?.data?.error || "아이디 또는 비밀번호가 올바르지 않습니다.";
         setError(msg);
         return;
       }
