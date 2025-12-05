@@ -13,6 +13,8 @@ import AiMeal from "./pages/AiMeal";
 
 import Layout from "./components/Layout";
 
+console.log("FRONT BUILD VERSION: 2025-12-05-001");
+
 function App() {
   return (
     <BrowserRouter>
