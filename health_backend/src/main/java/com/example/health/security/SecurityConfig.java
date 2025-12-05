@@ -19,20 +19,33 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
 
+    /**
+     * 🔥 CORS 설정 — 배포/로컬 둘 다 Authorization 헤더 정상 전달되게 하는 핵심
+     */
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins(
-                                "http://localhost:5173",
-                                "http://localhost:3000",
-                                "https://health-manager-frontend-henna.vercel.app"
+
+                        // 🔥 allowedOrigins → allowedOriginPatterns 로 변경
+                        //    vercel의 모든 하위 도메인, localhost 포트 전부 허용
+                        .allowedOriginPatterns(
+                                "http://localhost:*",
+                                "https://*.vercel.app"
                         )
+
+                        // 모든 메서드 허용
                         .allowedMethods("*")
+
+                        // 모든 헤더 허용 (Authorization 포함)
                         .allowedHeaders("*")
+
+                        // 프론트에서 Authorization 헤더 읽을 수 있도록 허용
                         .exposedHeaders("*")
+
+                        // JWT 인증 위해 credentials 必
                         .allowCredentials(true);
             }
         };
@@ -43,9 +56,8 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> {})
+                .cors(cors -> {})   // 🔥 반드시 corsConfigurer() 와 연결됨
 
-                // 🔥 여기 수정됨 — disable() 절대 쓰면 안 됨
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
