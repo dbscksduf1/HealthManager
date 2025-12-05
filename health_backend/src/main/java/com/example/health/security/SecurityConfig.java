@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -31,7 +32,7 @@ public class SecurityConfig {
                         )
                         .allowedMethods("*")
                         .allowedHeaders("*")
-                        .exposedHeaders("*")     // ★ JWT 헤더 브라우저에서 읽을 수 있게 꼭 필요
+                        .exposedHeaders("*")
                         .allowCredentials(true);
             }
         };
@@ -42,14 +43,18 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> {})    // ★ 반드시 필요 — WebMvcConfigurer와 연결됨
-                .sessionManagement(session -> session.disable())
-                .securityContext(context -> context.disable())
+                .cors(cors -> {})
+
+                // 🔥 여기 수정됨 — disable() 절대 쓰면 안 됨
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // preflight 허용
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/user/login").permitAll()
                         .requestMatchers("/user/create").permitAll()
                         .requestMatchers("/health/**").permitAll()
