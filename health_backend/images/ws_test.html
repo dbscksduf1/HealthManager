@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>WebSocket STOMP Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+    <style>
+        body {
+            font-family: Consolas, monospace;
+        }
+        #log {
+            white-space: pre-wrap;
+            background: #eee;
+            padding: 10px;
+            width: 450px;
+            height: 350px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+<h2>SmartHome WebSocket Test</h2>
+
+<button onclick="connectWS()">Connect</button>
+<button onclick="disconnectWS()">Disconnect</button>
+<br><br>
+
+<button onclick="sendCommand()">Send SmartHome Command</button>
+
+<pre id="log"></pre>
+
+<script>
+    let stompClient = null;
+
+    function log(msg) {
+        console.log(msg);
+        document.getElementById("log").innerText += msg + "\n";
+    }
+
+    function connectWS() {
+        log("Connecting...");
+        const socket = new SockJS("http://localhost:8080/ws");
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, () => {
+            log("Connected");
+
+            stompClient.subscribe("/topic/sensor", (msg) => {
+                log("Sensor >> " + msg.body);
+            });
+
+            stompClient.subscribe("/topic/command-result", (msg) => {
+                log("Command Result >> " + msg.body);
+            });
+
+        }, (error) => {
+            log("Connection Error: " + error);
+        });
+    }
+
+    function disconnectWS() {
+        if (stompClient !== null) {
+            stompClient.disconnect(() => {
+                log("Disconnected");
+            });
+        }
+    }
+
+    function sendCommand() {
+        if (!stompClient || !stompClient.connected) {
+            log("Not connected");
+            return;
+        }
+
+        const cmd = {
+            device: "led",
+            action: "setColor",
+            value: "blue"
+        };
+
+        stompClient.send("/app/command", {}, JSON.stringify(cmd));
+        log("Sent Command: " + JSON.stringify(cmd));
+    }
+</script>
+
+</body>
+</html>
