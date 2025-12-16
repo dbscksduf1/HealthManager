@@ -5,10 +5,12 @@ import com.example.health.domain.User;
 import com.example.health.security.JwtUtil;
 import com.example.health.service.RoutineService;
 import com.example.health.service.UserService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Profile("prod")
 @RestController
 @RequestMapping("/routine")
 public class RoutineController {

@@ -1,7 +1,10 @@
 package com.example.health.controller;
 
 import com.example.health.dto.RecommendResponse;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
@@ -31,7 +34,6 @@ public class HealthRecommendController {
         if (bmi < 15) goal = "벌크업";
         else if (bmi < 20) goal = "린매스업";
         else goal = "다이어트";
-
 
 
         List<String> back = Arrays.asList(

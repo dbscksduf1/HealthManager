@@ -1,19 +1,22 @@
 package com.example.health.controller;
 
 import com.example.health.dto.HealthStatusResponse;
-import com.example.health.service.AICommentService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import java.util.*;
-
+import com.example.health.service.AIService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.*;
 
 @RestController
 @RequestMapping("/health")
 @RequiredArgsConstructor
 public class HealthController {
 
-    private final AICommentService aiCommentService;
+    private final AIService aiService;
 
     @GetMapping("/status")
     public ResponseEntity<?> status(
@@ -38,7 +41,7 @@ public class HealthController {
         Map<String, Object> routine = generateRoutine(goal);
         Map<String, Object> meals = generateMeals(goal);
 
-        String aiComment = aiCommentService.generateComment(bmi, goal);
+        String aiComment = aiService.generateComment(bmi, goal);
 
         HealthStatusResponse response =
                 new HealthStatusResponse(bmi, goal, routine, meals, aiComment);

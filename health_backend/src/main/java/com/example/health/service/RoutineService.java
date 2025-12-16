@@ -2,10 +2,12 @@ package com.example.health.service;
 
 import com.example.health.domain.Routine;
 import com.example.health.repository.RoutineRepository;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Profile("prod")
 @Service
 public class RoutineService {
 

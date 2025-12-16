@@ -2,11 +2,13 @@ package com.example.health.service;
 
 import com.example.health.domain.User;
 import com.example.health.repository.UserRepository;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Profile("prod")
 @Service
 public class UserService {
 
@@ -78,7 +80,6 @@ public class UserService {
         }
 
         user.setAge(newData.getAge());
-
 
 
         if (newData.getPassword() != null && !newData.getPassword().isBlank()) {

@@ -17,7 +17,7 @@ public class User {
     @Column(unique = true)
     private String username;
     private String password;
-    private String name ="";
+    private String name = "";
     private int age;
     private double height = 0.0;
     private double weight = 0.0;

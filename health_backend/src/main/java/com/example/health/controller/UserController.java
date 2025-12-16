@@ -6,11 +6,13 @@ import com.example.health.dto.LoginResponse;
 import com.example.health.security.JwtUtil;
 import com.example.health.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Profile("prod")
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -89,8 +91,6 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-
 
 
     @PostMapping("/login")

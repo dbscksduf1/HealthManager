@@ -1,9 +1,12 @@
 package com.example.health.controller;
 
-import com.example.health.service.AIHealthAssistantService;
+import com.example.health.service.AIService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -12,7 +15,7 @@ import java.util.Map;
 @RequestMapping("/ai")
 public class AIHealthAssistantController {
 
-    private final AIHealthAssistantService assistantService;
+    private final AIService aiService;
 
     @PostMapping("/assistant")
     public ResponseEntity<?> assistant(@RequestBody Map<String, String> body) {
@@ -25,7 +28,7 @@ public class AIHealthAssistantController {
         }
 
         try {
-            String result = assistantService.handleRequest(type, exercise);
+            String result = aiService.handleRequest(type, exercise);
             return ResponseEntity.ok(Map.of("result", result));
         } catch (Exception e) {
             e.printStackTrace();   // 🔥 콘솔에 실제 오류 출력

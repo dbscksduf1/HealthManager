@@ -56,7 +56,8 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> {})   // 🔥 반드시 corsConfigurer() 와 연결됨
+                .cors(cors -> {
+                })   // 🔥 반드시 corsConfigurer() 와 연결됨
 
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

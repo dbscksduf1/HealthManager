@@ -27,10 +27,27 @@ public class RecommendResponse {
         this.meals = meals;
     }
 
-    public double getBmi() { return bmi; }
-    public String getGoal() { return goal; }
-    public Map<String, Object> getDay1() { return day1; }
-    public Map<String, Object> getDay2() { return day2; }
-    public Map<String, Object> getDay3() { return day3; }
-    public Map<String, String> getMeals() { return meals; }
+    public double getBmi() {
+        return bmi;
+    }
+
+    public String getGoal() {
+        return goal;
+    }
+
+    public Map<String, Object> getDay1() {
+        return day1;
+    }
+
+    public Map<String, Object> getDay2() {
+        return day2;
+    }
+
+    public Map<String, Object> getDay3() {
+        return day3;
+    }
+
+    public Map<String, String> getMeals() {
+        return meals;
+    }
 }
