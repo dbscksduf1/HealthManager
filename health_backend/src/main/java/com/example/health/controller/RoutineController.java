@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Profile("prod")
+
 @RestController
 @RequestMapping("/routine")
 public class RoutineController {
