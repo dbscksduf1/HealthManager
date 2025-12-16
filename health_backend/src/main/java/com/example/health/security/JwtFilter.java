@@ -27,16 +27,18 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        // 🔥 1) 로그인/회원가입은 JWT 검사 제외
         String path = request.getRequestURI();
-        if (path.startsWith("/user/login") || path.startsWith("/user/create")) {
+
+        // 🔥 JWT 검사 제외 경로 (아주 중요)
+        if (path.equals("/ping")
+                || path.startsWith("/user/login")
+                || path.startsWith("/user/create")) {
+
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 🔥 2) JWT 인증 처리
         String authHeader = request.getHeader("Authorization");
-
         String token = null;
         String username = null;
 
@@ -45,7 +47,6 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtil.getUsername(token);
             } catch (Exception e) {
-                // 토큰 문제 있을 때 403 리턴
                 response.setStatus(403);
                 response.setContentType("application/json;charset=UTF-8");
                 response.getWriter().write("{\"error\":\"권한이 없습니다.\"}");

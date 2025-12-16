@@ -19,33 +19,19 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
 
-    /**
-     * 🔥 CORS 설정 — 배포/로컬 둘 다 Authorization 헤더 정상 전달되게 하는 핵심
-     */
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-
-                        // 🔥 allowedOrigins → allowedOriginPatterns 로 변경
-                        //    vercel의 모든 하위 도메인, localhost 포트 전부 허용
                         .allowedOriginPatterns(
                                 "http://localhost:*",
                                 "https://*.vercel.app"
                         )
-
-                        // 모든 메서드 허용
                         .allowedMethods("*")
-
-                        // 모든 헤더 허용 (Authorization 포함)
                         .allowedHeaders("*")
-
-                        // 프론트에서 Authorization 헤더 읽을 수 있도록 허용
                         .exposedHeaders("*")
-
-                        // JWT 인증 위해 credentials 必
                         .allowCredentials(true);
             }
         };
@@ -56,11 +42,10 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> {
-                })   // 🔥 반드시 corsConfigurer() 와 연결됨
+                .cors(cors -> {})
 
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
                 .formLogin(form -> form.disable())
@@ -68,10 +53,14 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // 🔥 반드시 열어야 하는 엔드포인트
+                        .requestMatchers("/ping").permitAll()
                         .requestMatchers("/user/login").permitAll()
                         .requestMatchers("/user/create").permitAll()
                         .requestMatchers("/health/**").permitAll()
                         .requestMatchers("/ai/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
 
