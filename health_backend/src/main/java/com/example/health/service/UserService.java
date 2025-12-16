@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Profile("prod")
+
 @Service
 public class UserService {
 
