@@ -11,46 +11,76 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
+/**
+ * HealthController
+ * - 키/몸무게를 입력받아 BMI를 계산하고 목표(goal)를 결정함
+ * - 목표에 맞춘 운동 루틴/식단 데이터를 생성해서 반환함
+ * - BMI/목표를 기반으로 AI 코멘트를 생성해서 함께 반환함
+ */
 @RestController
 @RequestMapping("/health")
 @RequiredArgsConstructor
 public class HealthController {
 
+    /**
+     * AI 코멘트 생성을 담당하는 서비스
+     */
     private final AIService aiService;
 
+    /**
+     * 건강 상태 조회 API
+     * - QueryParam으로 height(cm), weight(kg)를 받아 BMI 계산
+     * - BMI 구간에 따라 goal(벌크업/린매스업/다이어트) 결정
+     * - goal 기반 루틴/식단 데이터 생성 후 응답 DTO로 반환
+     */
     @GetMapping("/status")
     public ResponseEntity<?> status(
             @RequestParam(required = false) Double height,
             @RequestParam(required = false) Double weight
     ) {
 
+        // 입력값 검증: 키가 없거나 0 이하이면 예외
         if (height == null || height <= 0) {
             throw new IllegalArgumentException("키를 올바르게 입력해주세요.");
         }
+
+        // 입력값 검증: 몸무게가 없거나 0 이하이면 예외
         if (weight == null || weight <= 0) {
             throw new IllegalArgumentException("몸무게를 올바르게 입력해주세요.");
         }
 
+        // BMI 계산 공식: kg / (m^2)
         double bmi = weight / Math.pow(height / 100.0, 2);
 
+        // BMI 값에 따라 목표(goal) 설정
         String goal;
         if (bmi < 18.5) goal = "벌크업";
         else if (bmi < 23) goal = "린매스업";
         else goal = "다이어트";
 
+        // 목표에 따른 운동 루틴 생성
         Map<String, Object> routine = generateRoutine(goal);
+
+        // 목표에 따른 식단 생성
         Map<String, Object> meals = generateMeals(goal);
 
+        // BMI/목표 기반 AI 코멘트 생성
         String aiComment = aiService.generateComment(bmi, goal);
 
+        // 최종 응답 DTO 구성
         HealthStatusResponse response =
                 new HealthStatusResponse(bmi, goal, routine, meals, aiComment);
 
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 목표(goal)에 맞는 3분할 운동 루틴 데이터 생성
+     * - bulk/lean/cut 각각 day1~day3 루틴 문자열 리스트로 구성
+     */
     private Map<String, Object> generateRoutine(String goal) {
 
+        // 벌크업 루틴 세트
         Map<String, List<String>> bulk = Map.of(
                 "day1", List.of(
                         "DAY1 - 등·어깨",
@@ -78,6 +108,7 @@ public class HealthController {
                 )
         );
 
+        // 린매스업 루틴 세트
         Map<String, List<String>> lean = Map.of(
                 "day1", List.of(
                         "DAY1 - 등·어깨",
@@ -105,6 +136,7 @@ public class HealthController {
                 )
         );
 
+        // 다이어트 루틴 세트
         Map<String, List<String>> cut = Map.of(
                 "day1", List.of(
                         "DAY1 - 등·어깨",
@@ -132,6 +164,7 @@ public class HealthController {
                 )
         );
 
+        // goal 값에 맞는 루틴 맵 반환
         return switch (goal) {
             case "벌크업" -> new HashMap<>(bulk);
             case "린매스업" -> new HashMap<>(lean);
@@ -139,19 +172,29 @@ public class HealthController {
         };
     }
 
+    /**
+     * 목표(goal)에 맞는 하루 식단 데이터 생성
+     *
+     * Ai 호출이 없는 상황에서 사용한 식단추천 시스템
+     * Ai 어시스턴스(챗봇)로 확장
+     */
     private Map<String, Object> generateMeals(String goal) {
 
+        // 목표별 식단 리스트 선택
         List<Map<String, Object>> meals;
 
         if (goal.equals("벌크업")) meals = bulkMeals();
         else if (goal.equals("린매스업")) meals = leanMeals();
         else meals = cutMeals();
 
+        // 응답 구성(순서 보장 위해 LinkedHashMap 사용)
         Map<String, Object> result = new LinkedHashMap<>();
         String[] keys = {"아침", "점심", "저녁"};
 
+        // 하루 총합(칼로리/탄수/단백/지방)
         double tCal = 0, tCarb = 0, tProtein = 0, tFat = 0;
 
+        // 3끼 데이터를 result에 담으면서 총합을 누적
         for (int i = 0; i < 3; i++) {
             Map<String, Object> m = meals.get(i);
             Map<String, Object> total = (Map<String, Object>) m.get("total");
@@ -164,6 +207,7 @@ public class HealthController {
             result.put(keys[i], m);
         }
 
+        // 하루 총합 영양소 추가
         result.put("dayTotal", Map.of(
                 "cal", tCal,
                 "carb", tCarb,
@@ -174,6 +218,9 @@ public class HealthController {
         return result;
     }
 
+    /**
+     * 식품 1개 아이템 생성
+     */
     private Map<String, Object> item(String name, double gram,
                                      double cal, double carb, double protein, double fat) {
         return Map.of(
@@ -186,12 +233,18 @@ public class HealthController {
         );
     }
 
+    /**
+     * 한 끼(meal) 구성
+     * - items 목록 생성
+     * - total(총합 영양소) 계산 후 함께 반환
+     */
     private Map<String, Object> meal(Map<String, Object>... items) {
 
         List<Map<String, Object>> list = Arrays.asList(items);
 
         double cal = 0, carb = 0, protein = 0, fat = 0;
 
+        // 아이템들의 영양소 합산
         for (var it : list) {
             cal += (double) it.get("cal");
             carb += (double) it.get("carb");
@@ -210,6 +263,9 @@ public class HealthController {
         );
     }
 
+    /**
+     * 벌크업 식단(아침/점심/저녁) 데이터 생성
+     */
     private List<Map<String, Object>> bulkMeals() {
 
         Map<String, Object> breakfast = meal(
@@ -239,6 +295,9 @@ public class HealthController {
         return List.of(breakfast, lunch, dinner);
     }
 
+    /**
+     * 린매스업 식단(아침/점심/저녁) 데이터 생성
+     */
     private List<Map<String, Object>> leanMeals() {
 
         Map<String, Object> breakfast = meal(
@@ -267,6 +326,9 @@ public class HealthController {
         return List.of(breakfast, lunch, dinner);
     }
 
+    /**
+     * 다이어트 식단(아침/점심/저녁) 데이터 생성
+     */
     private List<Map<String, Object>> cutMeals() {
 
         Map<String, Object> breakfast = meal(
