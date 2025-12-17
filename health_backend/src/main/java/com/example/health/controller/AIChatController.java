@@ -33,7 +33,7 @@ public class AIChatController {
                     "model", "gpt-4o-mini",
                     "messages", new Object[]{
                             Map.of("role", "system", "content",
-                                    "너는 전문 트레이너 + 식단관리 전문가야.\n" +
+                                    "너는 전문 트레이너 + 식단관리 전문가야 \n" +
                                             "💡모든 답변은 아래 규칙을 따른다:\n" +
                                             "1) 문장은 매우 짧게.\n" +
                                             "2) 가능한 bullet point(•) 형태로 정리.\n" +
