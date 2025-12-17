@@ -11,46 +11,72 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
+/**
+ * - 사용자의 키/몸무게를 입력받아 BMI를 계산하는 컨트롤러
+ * - BMI 기준으로 목표(goal)를 산출하고
+ * - 목표에 맞는 기본 운동 루틴과 AI 답변 반환
+ */
 @RestController
 @RequestMapping("/health")
 @RequiredArgsConstructor
 public class HealthController {
 
+    /**
+     * AI 답변 생성을 담당하는 서비스
+     */
     private final AIService aiService;
 
+    /**
+     * 건강 상태 조회 API
+     * @param height 사용자 키(cm)
+     * @param weight 사용자 몸무게(kg)
+     * @return BMI, 목표(goal), 운동 루틴, AI 코멘트
+     */
     @GetMapping("/status")
     public ResponseEntity<?> status(
             @RequestParam(required = false) Double height,
             @RequestParam(required = false) Double weight
     ) {
 
+        // 키 유효성 검사
         if (height == null || height <= 0) {
             throw new IllegalArgumentException("키를 올바르게 입력해주세요.");
         }
 
+        // 몸무게 유효성 검사
         if (weight == null || weight <= 0) {
             throw new IllegalArgumentException("몸무게를 올바르게 입력해주세요.");
         }
 
+        // BMI 계산 (kg / m^2)
         double bmi = weight / Math.pow(height / 100.0, 2);
 
+        // BMI 수치에 따른 목표 설정
         String goal;
         if (bmi < 18.5) goal = "벌크업";
         else if (bmi < 23) goal = "린매스업";
         else goal = "다이어트";
 
+        // 목표에 따른 기본 운동 루틴 생성
         Map<String, Object> routine = generateRoutine(goal);
 
+        // BMI 및 목표 기반 AI 코멘트 생성
         String aiComment = aiService.generateComment(bmi, goal);
 
+        // 응답 DTO 생성
         HealthStatusResponse response =
                 new HealthStatusResponse(bmi, goal, routine, aiComment);
 
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 목표(goal)에 따른 3분할 운동 루틴 생성
+     * - 벌크업 / 린매스업 / 다이어트 기준으로 루틴 구성
+     */
     private Map<String, Object> generateRoutine(String goal) {
 
+        // 벌크업 루틴
         Map<String, List<String>> bulk = Map.of(
                 "day1", List.of(
                         "DAY1 - 등·어깨",
@@ -78,6 +104,7 @@ public class HealthController {
                 )
         );
 
+        // 린매스업 루틴
         Map<String, List<String>> lean = Map.of(
                 "day1", List.of(
                         "DAY1 - 등·어깨",
@@ -105,6 +132,7 @@ public class HealthController {
                 )
         );
 
+        // 다이어트 루틴
         Map<String, List<String>> cut = Map.of(
                 "day1", List.of(
                         "DAY1 - 등·어깨",
@@ -132,6 +160,7 @@ public class HealthController {
                 )
         );
 
+        // 목표에 맞는 루틴 반환
         return switch (goal) {
             case "벌크업" -> new HashMap<>(bulk);
             case "린매스업" -> new HashMap<>(lean);

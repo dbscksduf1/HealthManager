@@ -7,48 +7,76 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
+/**
+ * AIService
+ * - OpenAI API를 호출해서
+ *   운동 / 식단 / 건강 조언 관련 AI 응답을 생성하는 서비스
+ * - 여러 AI 기능들이 공통으로 이 클래스를 사용함
+ */
 @Service
 public class AIService {
 
+    /**
+     * application.yml 또는 properties에 설정된 OpenAI API Key
+     */
     @Value("${openai.api-key}")
     private String apiKey;
 
+    /**
+     * OpenAI Chat Completions API 주소
+     */
     private static final String OPENAI_URL = "https://api.openai.com/v1/chat/completions";
 
     /* ===============================
        공통 OpenAI 호출 메서드
        =============================== */
+
+    /**
+     * OpenAI에 실제 요청을 보내는 공통 메서드
+     * - messages 형식만 넘겨주면
+     * - 결과 텍스트(content)만 추출해서 반환
+     */
     private String callOpenAI(Object[] messages) {
         try {
             RestTemplate rest = new RestTemplate();
 
+            // OpenAI 요청 바디 구성
             Map<String, Object> body = Map.of(
                     "model", "gpt-4o-mini",
                     "messages", messages
             );
 
+            // HTTP 헤더 설정
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setBearerAuth(apiKey);
 
             HttpEntity<Object> request = new HttpEntity<>(body, headers);
 
+            // OpenAI API 호출
             ResponseEntity<Map> response =
                     rest.exchange(OPENAI_URL, HttpMethod.POST, request, Map.class);
 
+            // 응답에서 AI 메시지(content)만 추출
             Map choice = (Map) ((java.util.List) response.getBody().get("choices")).get(0);
             Map message = (Map) choice.get("message");
 
             return message.get("content").toString();
 
         } catch (Exception e) {
+            // AI 호출 중 오류 발생 시 메시지 반환
             return "AI 응답 실패: " + e.getMessage();
         }
     }
 
     /* ===============================
-       1️⃣ 기존 AICommentService
+       1️⃣ BMI 기반 AI 코멘트 생성
        =============================== */
+
+    /**
+     * BMI와 목표(goal)를 기반으로
+     * 사용자에게 간단한 피드백 코멘트를 생성
+     */
     public String generateComment(double bmi, String goal) {
 
         String prompt = """
@@ -69,8 +97,13 @@ public class AIService {
     }
 
     /* ===============================
-       2️⃣ 기존 AIExerciseService
+       2️⃣ 운동 상세 설명 생성
        =============================== */
+
+    /**
+     * 특정 운동 하나에 대한
+     * 자세 / 주의사항 / 자극 부위를 설명하는 AI 응답 생성
+     */
     public String generateExerciseDetail(String exerciseName) {
 
         String prompt = """
@@ -91,8 +124,17 @@ public class AIService {
     }
 
     /* ===============================
-       3️⃣ 기존 AIHealthAssistantService
+       3️⃣ AI 헬스 어시스턴트 (통합)
        =============================== */
+
+    /**
+     * type 값에 따라
+     * - 운동 루틴
+     * - 식단
+     * - 초보자 조언
+     * - 다이어트 / 벌크업 팁
+     * 등을 AI가 생성하도록 처리
+     */
     public String handleRequest(String type, String exerciseName) {
 
         String prompt = "";
@@ -130,6 +172,7 @@ public class AIService {
         }
 
         return callOpenAI(new Object[]{
+                // AI 성격과 출력 규칙 정의
                 Map.of("role", "system", "content",
                         "너는 전문 트레이너 + 전문 영양사 AI이다.\n" +
                                 "모든 답변은 아래 규칙을 반드시 따른다:\n" +
@@ -141,6 +184,7 @@ public class AIService {
                                 "6) 너무 긴 문장은 절대 금지.\n" +
                                 "7) JSON을 출력하라고 하면 그대로 JSON만 출력.\n"
                 ),
+                // 실제 사용자 요청
                 Map.of("role", "user", "content", prompt)
         });
     }
