@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * AIService
@@ -26,6 +27,13 @@ public class AIService {
      * OpenAI Chat Completions API 주소
      */
     private static final String OPENAI_URL = "https://api.openai.com/v1/chat/completions";
+
+    /**
+     * BMI 기반 AI 코멘트 캐시
+     * key: bmi + goal
+     * value: AI 응답 문자열
+     */
+    private final Map<String, String> bmiCommentCache = new ConcurrentHashMap<>();
 
     /* ===============================
        공통 OpenAI 호출 메서드
@@ -79,6 +87,13 @@ public class AIService {
      */
     public String generateComment(double bmi, String goal) {
 
+        String cacheKey = String.format("%.2f:%s", bmi, goal);
+
+        String cached = bmiCommentCache.get(cacheKey);
+        if (cached != null) {
+            return cached;
+        }
+
         String prompt = """
                 당신은 전문 피트니스 트레이너입니다.
                 다음 사용자 정보를 기반으로 3~5줄 정도의 피드백을 작성하세요.
@@ -91,9 +106,12 @@ public class AIService {
                 문장3
                 """.formatted(bmi, goal);
 
-        return callOpenAI(new Object[]{
+        String result = callOpenAI(new Object[]{
                 Map.of("role", "user", "content", prompt)
         });
+
+        bmiCommentCache.put(cacheKey, result);
+        return result;
     }
 
     /* ===============================
