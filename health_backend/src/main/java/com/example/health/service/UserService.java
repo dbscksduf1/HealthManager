@@ -6,6 +6,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * UserService
@@ -25,6 +27,11 @@ public class UserService {
      * 비밀번호 암호화를 위한 BCrypt 인코더
      */
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    /**
+     * ✅ 사용자 조회 캐시 (username 기준)
+     */
+    private final Map<String, User> userCache = new ConcurrentHashMap<>();
 
     /**
      * 생성자 주입
@@ -58,7 +65,12 @@ public class UserService {
 
         // 비밀번호 암호화 후 저장
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return repo.save(user);
+        User saved = repo.save(user);
+
+        // ✅ 신규 사용자 캐시 반영
+        userCache.put(saved.getUsername(), saved);
+
+        return saved;
     }
 
     /**
@@ -87,12 +99,14 @@ public class UserService {
             throw new IllegalArgumentException("아이디를 입력해주세요.");
         }
 
-        User user = repo.findByUsername(username);
-        if (user == null) {
-            throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
-        }
-
-        return user;
+        // ✅ 캐시 우선 조회 → 없을 때만 DB 접근
+        return userCache.computeIfAbsent(username, key -> {
+            User user = repo.findByUsername(key);
+            if (user == null) {
+                throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
+            }
+            return user;
+        });
     }
 
     /**
@@ -115,6 +129,8 @@ public class UserService {
         User user = repo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
 
+        String oldUsername = user.getUsername();
+
         // 아이디 변경 (값이 있을 때만)
         if (newData.getUsername() != null && !newData.getUsername().isBlank()) {
             user.setUsername(newData.getUsername());
@@ -128,7 +144,13 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(newData.getPassword()));
         }
 
-        return repo.save(user);
+        User updated = repo.save(user);
+
+        // ✅ 캐시 정리 후 재등록
+        userCache.remove(oldUsername);
+        userCache.put(updated.getUsername(), updated);
+
+        return updated;
     }
 
     /**
@@ -137,11 +159,12 @@ public class UserService {
      */
     public void delete(Long id) {
 
-        // 사용자 존재 여부 확인
-        if (!repo.existsById(id)) {
-            throw new IllegalArgumentException("삭제할 사용자를 찾을 수 없습니다.");
-        }
+        User user = repo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("삭제할 사용자를 찾을 수 없습니다."));
 
         repo.deleteById(id);
+
+        // ✅ 캐시 제거
+        userCache.remove(user.getUsername());
     }
 }
