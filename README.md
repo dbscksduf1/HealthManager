@@ -1,75 +1,71 @@
 
-# 🏋️‍♂️ Health Manager
-React + Spring Boot 기반 **BMI 계산 / 운동 루틴 / 식단 추천 / JWT 인증** 헬스 관리 서비스
+#  Health Manager
+React + Spring Boot 기반 **BMI 계산 / 운동 루틴 /  헬스 관리 서비스
 
 ---
 
 ## 📌 프로젝트 소개
 Health Manager는 사용자가 **키와 체중을 입력하면 BMI를 계산**하고  
-그에 맞춰 **운동 루틴과 식단을 자동 추천**해주는 웹 서비스입니다.
+그에 맞춰 **운동 루틴을 자동 추천**해주는 웹 서비스입니다.
 
-- 프론트엔드와 백엔드를 완전 분리한 구조(MSA 느낌)
 - JWT 기반 로그인 인증
-- Postman을 통한 API 검증
+- OpenAI API호출을 이용한 헬스챗봇 개발
 - MySQL 기반 사용자 관리
+- 백엔드+프론트엔드 구조의 풀스택 시스템 
 
 
 ---
 
-## 🚀 주요 기능 요약
+## 주요 기능 요약
 
-### 🔐 인증(Authentication)
+### 인증(Authentication)
 - 회원가입
 - 로그인(JWT 발급)
 - 인증 사용자만 메인 페이지 접근 가능
 
-### 📊 BMI 계산
+### 챗봇
+- OpenAI API호출을 이용한 조언과 챗봇시스템
+
+###  BMI 계산
 - `height`, `weight` 입력 후 자동 BMI 계산
 - BMI 구간에 따라 “벌크업 / 린매스업 / 다이어트” 목표 자동 분류
 
-### 🏋️ 운동 루틴 추천
-- 3분할 Day1/Day2/Day3 구성
+### 운동 루틴 추천
 - 목표에 따라 운동 강도 및 부위 자동 추천
 
-### 🍽️ 식단 추천
-- 아침 / 점심 / 저녁 구성
-- 총 칼로리 포함
 
 ---
 
-## 🧱 기술 스택
 
-### 🔸 Frontend
+## 기술 스택
+
+### 🔸 Language
 <p>
-  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=React&logoColor=61DAFB"/>
-  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white"/>
-  <img src="https://img.shields.io/badge/JavaScript-f7df1e?style=for-the-badge&logo=javascript&logoColor=black"/>
-  <img src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=java&logoColor=white"/>
 </p>
 
 ### 🔸 Backend
 <p>
-  <img src="https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=java&logoColor=white"/>
-  <img src="https://img.shields.io/badge/SpringBoot-6db33f?style=for-the-badge&logo=springboot&logoColor=white"/>
-  <img src="https://img.shields.io/badge/SpringSecurity-6db33f?style=for-the-badge&logo=springsecurity&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Spring%20Security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white"/>
+  <img src="https://img.shields.io/badge/REST%20API-000000?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white"/>
+  <img src="https://img.shields.io/badge/JPA-59666C?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/OpenAI%20API-412991?style=for-the-badge&logo=openai&logoColor=white"/>
 </p>
 
-### 🔸 Database
+### 🔸 Infra / DB
 <p>
   <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Workbench-00688F?style=for-the-badge&logo=mysql&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Render-000000?style=for-the-badge&logo=render&logoColor=white"/>
 </p>
 
-### 🔸 Tools
+### 🔸 ETC
 <p>
-  <img src="https://img.shields.io/badge/VSCode-007ACC?style=for-the-badge&logo=visualstudiocode&logoColor=white"/>
-  <img src="https://img.shields.io/badge/IntelliJ-000000?style=for-the-badge&logo=intellijidea&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white"/>
-  <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white"/>
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/>
 </p>
+
+
 
 
 
