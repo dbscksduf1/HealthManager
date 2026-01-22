@@ -66,57 +66,29 @@ Health Manager는 사용자가 **키와 체중을 입력하면 BMI를 계산**�
 </p>
 
 
+---
 
 
+###  아키텍처
 
-## 🏗️ 전체 아키텍처
+![아키텍처](images/아키텍처.PNG)
 
-```yaml
-architecture:
-  client:
-    name: "User(Client)"
-    action: "웹 브라우저로 서비스 접속"
-  
-  frontend:
-    name: "React Frontend"
-    actions:
-      - "화면 UI 렌더링"
-      - "Axios로 Backend API 호출"
-      - "JWT를 localStorage에 저장하여 인증 상태 유지"
-
-  backend:
-    name: "Spring Boot Backend"
-    components:
-      - "Controller"
-      - "Service"
-      - "Repository"
-      - "Spring Security (JWT Filter)"
-    actions:
-      - "로그인 시 JWT 생성 및 검증"
-      - "BMI 계산 처리"
-      - "운동/식단 데이터 제공"
-
-  database:
-    name: "MySQL Database"
-    actions:
-      - "회원 정보 저장"
-      - "JPA로 DB 연동"
-
-```
 
 ---
 
 ## 🌐 동작 흐름
 
 1. 사용자가 React UI에서 로그인/회원가입
-2. 백엔드(Spring Boot)가 JWT 생성 후 반환
-3. 프론트는 JWT를 localStorage에 저장
-4. BMI 계산 요청 시 Axios가 JWT 포함해서 API 호출
-5. 백엔드는 BMI + 운동 + 식단 추천 결과 반환
+2. 백엔드(Spring Boot)가 JWT 발급
+3. 프론트엔드는 JWT를 포함하여 API 요청
+4. Spring Security에서 JWT 검증
+5. 백엔드는 BMI 계산 및 OpenAI API호출 후 사용자조언
+6. 챗봇 요청 시 캐시 확인 후 OpenAI API 호출
+7. 결과를 프론트엔드로 반환
+
 
 ---
 
-## 📸 화면 미리보기
 
 ### 🔐 로그인 페이지
 ![로그인화면](images/login.png)
@@ -133,7 +105,7 @@ architecture:
 ---
 
 ### 📊 BMI 계산 페이지
-![bmi계산](images/bmi.png)
+![bmi계산]
 
 ---
 
@@ -146,30 +118,11 @@ architecture:
 
 
 
----
 
-## 🔌 실행 방법
-
-### ✔ Backend 실행
-cd backend
-./gradlew bootRun
-
-
-### ✔ Frontend 실행
-cd frontend
-npm install
-npm run dev
 
 
 ---
 
-## 🧪 API 테스트
-Postman 또는 브라우저로 테스트 가능.
-
-예시:
-POST /user/login
-POST /user/create
-GET /health/status?height=175&weight=75
 
 
 
