@@ -16,6 +16,30 @@ Health Manager는 사용자가 **키와 체중을 입력하면 BMI를 계산**�
 
 ---
 
+### 🔐 로그인 페이지
+![로그인화면](images/login.png)
+
+---
+### 📝 회원가입 페이지
+![회원가입 화면](images/join.png)
+
+---
+
+### 🏠 메인 페이지
+![메인 화면](images/main.png)
+
+---
+
+### 📊 BMI 계산 페이지
+![bmi계산 화면](images/bmi계산하기.PNG)
+
+---
+
+### 🍽️ AI챗봇
+![AI 챗봇](images/pt챗봇.PNG)
+
+---
+
 ## 주요 기능 요약
 
 ### 인증(Authentication)
@@ -28,7 +52,7 @@ Health Manager는 사용자가 **키와 체중을 입력하면 BMI를 계산**�
 
 ###  BMI 계산
 - `height`, `weight` 입력 후 자동 BMI 계산
-- BMI 구간에 따라 “벌크업 / 린매스업 / 다이어트” 목표 자동 분류
+- BMI 구간에 따라 “벌크업 / 린매스업 / 다이어트” 목표 분류
 
 ### 운동 루틴 추천
 - 목표에 따라 운동 강도 및 부위 자동 추천
@@ -89,54 +113,48 @@ Health Manager는 사용자가 **키와 체중을 입력하면 BMI를 계산**�
 
 ---
 
+## 트러블 슈팅
 
-### 🔐 로그인 페이지
-![로그인화면](images/login.png)
+### 1️⃣ 동일 요청에 대한 불필요한 OpenAI API 호출 문제
 
----
-### 📝 회원가입 페이지
-![회원가입 화면](images/join.png)
+**문제**
+- 챗봇 기능에서 동일한 질문에 대해서도 매번 OpenAI API를 호출
+- 응답 지연 및 불필요한 API 비용 발생
 
----
+**해결**
+- 사용자 질문을 기준으로 캐싱 방식 적용
+- 동일 요청이 들어올 경우 OpenAI API를 호출하지 않고 캐시된 응답 반환
 
-### 🏠 메인 페이지
-![메인 화면](images/main.png)
-
----
-
-### 📊 BMI 계산 페이지
-![bmi계산]
+**성과**
+- 불필요한 OpenAI API 호출 제거
+- 응답 속도 평균 약 2000ms -> 200ms 개선 및 API 비용 절감
 
 ---
 
-### 🍽️ 맞춤 식단 페이지
-![맞춤 식단 화면](images/meal.png)
+### 2️⃣ Render 서버 Sleep 상태로 인한 초기 응답 지연 문제
 
+**문제**
+- Render 저가형 플랜 특성상 일정 시간 미사용 시 서버가 Sleep 상태로 전환
+- 첫 요청(로그인 및 회원가입) 시 서버 기동으로 인해 1분 이상 응답 지연 발생
 
+**해결**
+- UptimeRobot을 활용해 서버에 주기적 요청 전송
+- 서버가 Sleep 상태로 진입하지 않도록 유지
 
-
-
-
-
-
-
-
+**성과**
+- 첫 요청 응답 시간 약 1분 이상 → 3초 이내로 단축
+- 사용자 체감 성능 및 서비스 안정성 개선
+  
 ---
 
 
 
 
----
+## 배포
+- Frontend: Vercel
+- Backend: Render
 
-## 📦 배포
-- Frontend: Vercel 배포 완료
-- Backend: Render(Spring Boot 빌드 방식) 배포 완료
-- Database: Render MySQL 사용
----
 
-## 👨‍💻 개발자
-**윤찬열(Backend + Frontend Full)**    
-- Spring Boot API 개발  
-- JWT 인증 및 DB 설계  
-- 아키텍처 설계 / 테스트 / 디버깅  
+
+
 
