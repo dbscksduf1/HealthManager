@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://healthmanager-backend.onrender.com",
+  baseURL: "https://healthmanager-dxh7.onrender.com",
 });
 
 // ========================================
